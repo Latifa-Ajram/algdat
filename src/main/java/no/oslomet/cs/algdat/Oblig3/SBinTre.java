@@ -1,9 +1,7 @@
 package no.oslomet.cs.algdat.Oblig3;
 
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class SBinTre<T> {
     private static final class Node<T>   // en indre nodeklasse
@@ -82,9 +80,42 @@ public class SBinTre<T> {
         return antall == 0;
     }
 
-    public boolean leggInn(T verdi) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+    public boolean leggInn(T verdi)
+    {
+        Objects.requireNonNull(verdi, "Ulovlig med nullverdier!");
+
+        Node<T> p = rot, q = null;               // p starter i roten
+        int cmp = 0;                             // hjelpevariabel
+
+        while (p != null)       // fortsetter til p er ute av treet
+        {
+            q = p;                                 // q er forelder til p
+            cmp = comp.compare(verdi,p.verdi);     // bruker komparatoren
+            p = cmp < 0 ? p.venstre : p.høyre;// flytter p
+
+        }
+
+        // p er nå null, dvs. ute av treet, q er den siste vi passerte
+
+
+        p = new Node<>(verdi,null);                   // oppretter en ny node
+
+        if (q == null) rot = p;                  // p blir rotnode
+        else if (cmp < 0) q.venstre = p;         // venstre barn til q
+        else q.høyre = p;// høyre barn til q
+
+        if(q != null){
+            p.forelder = q;
+        }else {
+            p.forelder = null;
+        }
+
+        antall++;                                // én verdi mer i treet
+        endringer++;
+        return true;                             // vellykket innlegging
     }
+
+
 
     public boolean fjern(T verdi) {
         throw new UnsupportedOperationException("Ikke kodet ennå!");
@@ -95,19 +126,52 @@ public class SBinTre<T> {
     }
 
     public int antall(T verdi) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        //throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+     Node<T> p = rot;
+
+     if (verdi == null) return 0;
+     int n=0;
+     while ( p != null){
+
+         int cmp  = comp.compare(verdi,p.verdi);
+         if(cmp < 0) p=p.venstre;
+         else {
+             if(cmp == 0)n++;
+             p = p.høyre;
+         }
+     }
+     return n;
     }
+
+
 
     public void nullstill() {
         throw new UnsupportedOperationException("Ikke kodet ennå!");
     }
 
     private static <T> Node<T> førstePostorden(Node<T> p) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        //throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+        while (true)
+        {
+            if (p.venstre != null) p = p.venstre;
+            else if (p.høyre != null) p = p.høyre;
+            else return p;
+        }
+
     }
 
     private static <T> Node<T> nestePostorden(Node<T> p) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        //throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+        Node<T> q= p.forelder; // initialisering av p.forelder
+
+        if( q == null) return null;
+
+        if(q.høyre == p || q.høyre== null) return q;
+
+        else return førstePostorden(q.høyre);
     }
 
     public void postorden(Oppgave<? super T> oppgave) {
